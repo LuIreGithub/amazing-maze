@@ -1,6 +1,12 @@
+from pathlib import Path
+
+dossier_outputs = Path(__file__).parent.parent / "outputs"
+
 nom_fichier = input("Entrez le nom du fichier du labyrinthe : ")
 
-with open(nom_fichier, "r") as fichier:
+chemin_fichier = dossier_outputs / nom_fichier
+
+with open(chemin_fichier, "r") as fichier:
     lignes = fichier.readlines()
 
 labyrinthe = []
@@ -36,9 +42,9 @@ def resoudre(i, j):
 
 resoudre(0,1)
 
-nom_fichier_solution = input("Entres le nom du fichier avec la solution : ")
-
-with open(nom_fichier_solution, "w") as fichier:
+nom_fichier_solution = input("Entrez le nom du fichier avec la solution : ")
+chemin_solution = dossier_outputs / nom_fichier_solution
+with open(chemin_solution, "w") as fichier:
     for ligne in labyrinthe:
         fichier.write("".join(ligne) + "\n")
 

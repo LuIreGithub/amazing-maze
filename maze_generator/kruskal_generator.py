@@ -1,8 +1,15 @@
-
+from pathlib import Path
 import random
+
+
+
+dossier_outputs = Path(__file__).parent.parent / "outputs"
+
 n = int(input("Ecrivez la taille du labyrinthe: "))
+
 nom_fichier = input ("Entrez le nom du fichier: ")
 
+chemin_fichier = dossier_outputs / nom_fichier
 
 taille = 2*n + 1
 
@@ -16,7 +23,7 @@ for i in  range (taille):
 
         else:
             ligne.append("#")    
-    labyrinthe.append(ligne)
+    labyrinthe.append(ligne) 
 
 
 groupes = list ((range(n**2)))
@@ -73,7 +80,7 @@ for (cellule1, cellule2) in connexions:
 labyrinthe[0][1] = "."
 labyrinthe[2*n][2*n-1] = "."     
 
-with open(nom_fichier, "w") as fichier:
+with open(chemin_fichier, "w") as fichier:
     for ligne in labyrinthe:
         fichier.write("".join(ligne) + "\n")
 

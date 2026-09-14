@@ -1,8 +1,16 @@
+from pathlib import Path
+
 import random
 
+dossier_outputs = Path(__file__).parent.parent / "outputs"
+
+dossier_outputs.mkdir(exist_ok=True)
 
 n = int(input("Entrez la taille du labyrinthe : "))
+
 nom_fichier = input ("Entrez le nom du fichier: ")
+
+chemin_fichier = dossier_outputs / nom_fichier
 
 taille = 2*n+1
 
@@ -48,7 +56,7 @@ generer_chemin(1, 1)
 
 labyrinthe[2*n][2*n - 1] = "."
 
-with open(nom_fichier, "w") as fichier:
+with open(chemin_fichier, "w") as fichier:
     for ligne in labyrinthe:
         fichier.write("".join(ligne) + "\n")
 
