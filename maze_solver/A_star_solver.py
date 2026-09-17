@@ -80,9 +80,5 @@ def resoudre_labyrinthe_a_star(nom_fichier, nom_fichier_solution):
        for ligne in labyrinthe:
            fichier.write("".join(ligne) + "\n")
 
-resoudre_labyrinthe_a_star(
-    "test_recursive.txt",
-    "test_solution_astar.txt"
-)
 
 
