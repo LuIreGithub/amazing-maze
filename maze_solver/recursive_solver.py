@@ -2,53 +2,55 @@ from pathlib import Path
 
 dossier_outputs = Path(__file__).parent.parent / "outputs"
 
-nom_fichier = input("Entrez le nom du fichier du labyrinthe : ")
+dossier_outputs.mkdir(exist_ok=True)
 
-chemin_fichier = dossier_outputs / nom_fichier
+def resoudre_labyrinthe_recursive(nom_fichier, nom_fichier_solution):
 
-with open(chemin_fichier, "r") as fichier:
-    lignes = fichier.readlines()
+    chemin_fichier = dossier_outputs / nom_fichier
 
-labyrinthe = []
+    with open(chemin_fichier, "r") as fichier:
+        lignes = fichier.readlines()
 
-for ligne in lignes:
-    labyrinthe.append(list(ligne.strip()))
+    labyrinthe = []
 
-taille = len(labyrinthe)
-n = (taille-1)//2
+    for ligne in lignes:
+        labyrinthe.append(list(ligne.strip()))
 
-directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    taille = len(labyrinthe)
+    n = (taille-1)//2
 
-def resoudre(i, j):
-    if (i, j) == (2*n, 2*n - 1):
-        labyrinthe[i][j] = "o"
-        return True
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
-    labyrinthe[i][j] = "*"
+    def resoudre(i, j):
+        if (i, j) == (2*n, 2*n - 1):
+            labyrinthe[i][j] = "o"
+            return True
 
-    for (di, dj) in directions:
+        labyrinthe[i][j] = "*"
 
-        ni = i+di
-        nj = j+dj 
+        for (di, dj) in directions:
 
-        if 0 <= ni < taille and 0<= nj < taille:
+            ni = i+di
+            nj = j+dj 
 
-            if labyrinthe[ni][nj] == ".":
+            if 0 <= ni < taille and 0<= nj < taille:
 
-                if resoudre(ni, nj):
-                    labyrinthe[i][j] = "o"
-                    return True
-    return False   
+               if labyrinthe[ni][nj] == ".":
 
-resoudre(0,1)
+                   if resoudre(ni, nj):
+                       labyrinthe[i][j] = "o"
+                       return True
+        return False   
 
-nom_fichier_solution = input("Entrez le nom du fichier avec la solution : ")
-chemin_solution = dossier_outputs / nom_fichier_solution
-with open(chemin_solution, "w") as fichier:
-    for ligne in labyrinthe:
-        fichier.write("".join(ligne) + "\n")
+    resoudre(0,1)
 
-                
+
+    chemin_solution = dossier_outputs / nom_fichier_solution
+    with open(chemin_solution, "w") as fichier:
+      for ligne in labyrinthe:
+          fichier.write("".join(ligne) + "\n")
+
+           
 
 
     
