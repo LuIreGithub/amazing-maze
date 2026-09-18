@@ -1,12 +1,13 @@
 from pathlib import Path
 import random
-
+import time
 
 dossier_outputs = Path(__file__).parent.parent / "outputs"
 
 dossier_outputs.mkdir(exist_ok=True)
 
 def generer_labyrinthe_kruskal(n, nom_fichier):
+    debut = time.perf_counter()
 
     chemin_fichier = dossier_outputs / nom_fichier
 
@@ -25,7 +26,25 @@ def generer_labyrinthe_kruskal(n, nom_fichier):
         labyrinthe.append(ligne) 
 
 
-    groupes = list ((range(n**2)))
+    parents = list(range(n**2))
+    tailles = [1] * (n**2)
+
+    def find(x):
+        while parents[x] != x:
+            parents[x] = parents[parents[x]]
+            x = parents[x]
+        return x
+
+    def union(a,b):
+        racine_a = find(a)
+        racine_b = find(b)
+
+        if tailles[racine_a] < tailles[racine_b]:
+            parents[racine_a] = racine_b
+            tailles[racine_b] += tailles[racine_a]
+        else:
+            parents[racine_b] = racine_a
+            tailles[racine_a] += tailles[racine_b]
 
     connexions = []
     for i in range(n):
@@ -45,7 +64,7 @@ def generer_labyrinthe_kruskal(n, nom_fichier):
     connexions_acceptes = 0
 
     for (cellule1, cellule2) in connexions:
-        if groupes[cellule1] != groupes[cellule2]:
+        if find(cellule1) != find(cellule2):
 
             i1 = cellule1 // n
             j1 = cellule1 % n
@@ -64,25 +83,24 @@ def generer_labyrinthe_kruskal(n, nom_fichier):
 
             labyrinthe[mur_i][mur_j] = "."
         
-            groupe1 = groupes[cellule1]
-            groupe2 = groupes[cellule2]
+            union(cellule1,cellule2)
 
-            for k in range(n**2):
-                if groupes[k] == groupe2:
-                    groupes[k] = groupe1
-
+        
             connexions_acceptes += 1
 
             if connexions_acceptes == n**2-1:
                 break   
 
     labyrinthe[0][1] = "."
-    labyrinthe[2*n][2*n-1] = "."     
+    labyrinthe[2*n][2*n-1] = "."   
+
+    fin = time.perf_counter()  
 
     with open(chemin_fichier, "w") as fichier:
        for ligne in labyrinthe:
            fichier.write("".join(ligne) + "\n")
 
-generer_labyrinthe_kruskal(5, "test_kruskal.txt")
 
+    temps = fin - debut
+    print(f"Temps de génération : {temps:.4f} secondes")
             

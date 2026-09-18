@@ -1,5 +1,5 @@
 from pathlib import Path
-
+import time
 import random
 
 dossier_outputs = Path(__file__).parent.parent / "outputs"
@@ -7,7 +7,7 @@ dossier_outputs = Path(__file__).parent.parent / "outputs"
 dossier_outputs.mkdir(exist_ok=True)
 
 def generer_labyrinthe_recursive(n, nom_fichier):
-
+    debut = time.perf_counter()
     chemin_fichier = dossier_outputs / nom_fichier
 
     taille = 2*n+1
@@ -54,7 +54,12 @@ def generer_labyrinthe_recursive(n, nom_fichier):
 
     labyrinthe[2*n][2*n - 1] = "."
 
+    fin = time.perf_counter()
+    
     with open(chemin_fichier, "w") as fichier:
       for ligne in labyrinthe:
           fichier.write("".join(ligne) + "\n")
+
+    temps = fin - debut
+    print(f"Temps de génération : {temps:.4f} secondes")            
 

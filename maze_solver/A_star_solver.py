@@ -1,11 +1,11 @@
 from pathlib import Path
 import heapq
-
+import time
 dossier_outputs = Path(__file__).parent.parent / "outputs"
 dossier_outputs.mkdir(exist_ok=True)
 
 def resoudre_labyrinthe_a_star(nom_fichier, nom_fichier_solution):
-
+    debut = time.perf_counter()
     chemin_fichier = dossier_outputs / nom_fichier
 
     with open(chemin_fichier, "r") as fichier:
@@ -34,6 +34,7 @@ def resoudre_labyrinthe_a_star(nom_fichier, nom_fichier_solution):
     precedent = {}
 
     couts_g = {depart: 0}
+    
 
     while cases_a_explorer:
         f, position = heapq.heappop(cases_a_explorer)
@@ -73,7 +74,7 @@ def resoudre_labyrinthe_a_star(nom_fichier, nom_fichier_solution):
        position = precedent[position]
 
     labyrinthe[depart[0]][depart[1]] = "o"
-
+    fin = time.perf_counter()
 
     chemin_solution = dossier_outputs / nom_fichier_solution
     with open(chemin_solution, "w") as fichier:
@@ -81,4 +82,5 @@ def resoudre_labyrinthe_a_star(nom_fichier, nom_fichier_solution):
            fichier.write("".join(ligne) + "\n")
 
 
-
+    temps = fin - debut
+    print(f"Temps de résolution : {temps:.4f} secondes")

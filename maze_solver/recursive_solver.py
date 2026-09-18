@@ -1,11 +1,12 @@
 from pathlib import Path
+import time
 
 dossier_outputs = Path(__file__).parent.parent / "outputs"
 
 dossier_outputs.mkdir(exist_ok=True)
 
 def resoudre_labyrinthe_recursive(nom_fichier, nom_fichier_solution):
-
+    debut = time.perf_counter()
     chemin_fichier = dossier_outputs / nom_fichier
 
     with open(chemin_fichier, "r") as fichier:
@@ -43,12 +44,15 @@ def resoudre_labyrinthe_recursive(nom_fichier, nom_fichier_solution):
         return False   
 
     resoudre(0,1)
-
+    fin = time.perf_counter()
 
     chemin_solution = dossier_outputs / nom_fichier_solution
     with open(chemin_solution, "w") as fichier:
       for ligne in labyrinthe:
           fichier.write("".join(ligne) + "\n")
+
+    temps = fin - debut
+    print(f"Temps de résolution : {temps:.4f} secondes")      
 
            
 
