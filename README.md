@@ -130,19 +130,47 @@ Chaque caractère du fichier est représenté par une couleur différente :
 
 Le même script peut être utilisé pour visualiser aussi bien un labyrinthe généré qu'un labyrinthe résolu. La représentation graphique permet ainsi de distinguer facilement les murs, les zones explorées et le chemin trouvé entre l'entrée et la sortie.
 
-## 6. Tests de performance et analyse 
+## 6. Tests de performance et analyse
 
-Les performances des différents algorithmes peuvent être comparées à partir de leur complexité temporelle et spatiale.
+Les performances des différents algorithmes peuvent être comparées à partir de leur complexité temporelle et spatiale, mais également à partir des temps mesurés pendant l'exécution.
 
-Le Recursive Backtracking utilisé pour la génération et la résolution possède une complexité temporelle de `O(n²)`, car le labyrinthe contient `n²` cellules logiques et chaque cellule est visitée au plus une fois. Sa complexité spatiale est également `O(n²)`. Cependant, l'utilisation de la récursion peut atteindre la limite de récursion de Python pour de grands labyrinthes.
+Le Recursive Backtracking utilisé pour la génération et la résolution possède une complexité temporelle de `O(n²)`, car le labyrinthe contient `n²` cellules et chaque cellule est visitée au plus une fois. Sa complexité spatiale est également `O(n²)`. Cependant, l'utilisation de la récursion peut atteindre la limite de récursion de Python pour de grands labyrinthes.
 
-Notre implémentation de Kruskal possède une complexité temporelle pouvant atteindre `O(n⁴)`. En effet, lors de la fusion de deux groupes, la liste des `n²` cellules est parcourue. Cette opération est répétée de nombreuses fois pendant la génération. Cette implémentation devient donc beaucoup moins adaptée lorsque `n` augmente. Une structure Union-Find permettrait d'améliorer cette partie.
+Grâce à l'utilisation de Union-Find avec compression de chemin et union par taille, notre nouvelle implémentation de Kruskal possède une complexité temporelle proche de `O(n²)`. Les groupes peuvent être recherchés et fusionnés efficacement sans parcourir toute la liste des cellules à chaque connexion.
 
 Pour A*, la complexité temporelle peut être estimée à `O(n² log n)`. Le facteur logarithmique provient notamment de l'utilisation du heap comme file de priorité. Même si sa complexité théorique est supérieure à celle du Recursive Backtracking, son heuristique peut lui permettre d'explorer moins de cellules en pratique.
 
-Lorsque `n` est multiplié par 10, un algorithme en `O(n²)` voit son coût théorique multiplié approximativement par 100, tandis qu'un algorithme en `O(n⁴)` peut voir son coût multiplié par environ 10 000.
+### Résultats expérimentaux
 
-Les tailles proposées de 1 000, 10 000 et 100 000 montrent également les limites de la représentation utilisée. Pour `n = 1 000`, le labyrinthe contient déjà 1 000 000 de cellules logiques et la matrice ASCII contient environ 4 millions de positions. Pour `n = 100 000`, cette matrice contiendrait environ 40 milliards de positions. La mémoire disponible devient donc également une limitation importante pour les très grandes tailles.
+Les temps ont été mesurés avec `time.perf_counter()`.
+
+Pour la génération, le temps mesuré correspond à la construction du labyrinthe en mémoire, sans inclure l'écriture du fichier de sortie.
+
+| Taille `n` | Cellules `n²` | Kruskal avec Union-Find |
+|---:|---:|---:|
+| 50 | 2 500 | 0,0123 s |
+| 100 | 10 000 | 0,0450 s |
+| 200 | 40 000 | 0,1245 s |
+| 500 | 250 000 | 0,8568 s |
+| 1000 | 1 000 000 | 3,6497 s |
+
+Lorsque `n` passe de 500 à 1000, le nombre de cellules est multiplié par 4 et le temps mesuré passe de 0,8568 s à 3,6497 s, soit environ 4,26 fois plus. Ces résultats sont cohérents avec la complexité attendue de l'implémentation de Kruskal avec Union-Find.
+
+Le générateur Recursive Backtracking a été très rapide pour les petites tailles, mais sa limite principale est la récursion. Par exemple, une exécution avec `n = 50` a atteint la limite de récursion, tandis que d'autres exécutions avec la même taille ont réussi. Pour `n = 100`, une `RecursionError` a également été observée. La profondeur de la récursion dépend donc aussi du parcours aléatoire généré.
+
+Pour les solveurs, les mesures incluent la lecture du fichier et la résolution du labyrinthe, mais pas l'écriture du fichier de sortie.
+
+| Taille `n` | Recursive Backtracking | A* |
+|---:|---:|---:|
+| 50 | 0,0057 s | 0,0147 s |
+| 100 | 0,0139 s | environ 0,04 s |
+| 200 | RecursionError | 0,0883 s |
+| 500 | — | 0,8652 s |
+| 1000 | — | 3,5033 s |
+
+Pour les petites tailles testées, le solveur Recursive Backtracking est plus rapide, mais il atteint la limite de récursion lorsque la taille augmente. A* nécessite davantage de structures de données et de calculs, notamment le heap, les coûts `g` et l'heuristique `h`, mais il a pu résoudre les labyrinthes testés jusqu'à `n = 1000` sans rencontrer cette limitation.
+
+Les tailles proposées de 1 000, 10 000 et 100 000 montrent également les limites de la représentation utilisée. Pour `n = 1 000`, le labyrinthe contient déjà 1 000 000 de cellules et la matrice ASCII contient environ 4 millions de positions. Pour `n = 100 000`, cette matrice contiendrait environ 40 milliards de positions. La mémoire disponible devient donc également une limitation importante pour les très grandes tailles.
 
 ## 7. Conclusion
 
